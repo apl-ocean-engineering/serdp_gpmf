@@ -60,20 +60,18 @@ else()
     )
 
     include_directories(
-        ${catkin_INCLUDE_DIRS}
         include
-        ros/include/
-      )
+        ${catkin_INCLUDE_DIRS} )
 
 
     file(GLOB serdp_gpmf_SRCS
         lib/*.cpp
       )
 
-    add_library(serdp_gpmf ${serdp_gpmf_SRCS})
-    target_link_libraries(serdp_gpmf ${catkin_LIBRARIES})
+    add_library(serdp_gpmf_LIB ${serdp_gpmf_SRCS})
+    target_link_libraries(serdp_gpmf_LIB ${catkin_LIBRARIES})
 
-    install(TARGETS serdp_gpmf
+    install(TARGETS serdp_gpmf_LIB
           ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
           LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
           RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
