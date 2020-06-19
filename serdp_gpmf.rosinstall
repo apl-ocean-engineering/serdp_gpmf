@@ -1,1 +1,2 @@
 - git: {local-name: gpmf, uri: "https://github.com/apl-ocean-engineering/libgpmf.git", version: master}
+- git: {local-name: liboculus, uri: "https://github.com/apl-ocean-engineering/liboculus.git", version: master}
