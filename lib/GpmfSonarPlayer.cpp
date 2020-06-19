@@ -45,11 +45,6 @@ namespace serdp_gpmf {
 using namespace std;
 using namespace liboculus;
 
-#ifdef WITH_GPMF
-shared_ptr<SonarPlayerBase> SonarPlayerBase::createGPMFSonarPlayer() {
-  return shared_ptr<SonarPlayerBase>(new GPMFSonarPlayer());
-}
-#endif
 
 /// Static function which automatically detects file type
 shared_ptr<SonarPlayerBase> OpenFile(const string &filename) {
@@ -81,11 +76,19 @@ shared_ptr<SonarPlayerBase> OpenFile(const string &filename) {
 //--- GPMFSonarPlayer --
 
 GPMFSonarPlayer::GPMFSonarPlayer()
-    : SonarPlayerBase(), _stream(), _valid(false), _buffer() {
-  ;
-}
+    : SonarPlayerBase(), _stream(nullptr), _valid(false), _buffer()
+{;}
 
-GPMFSonarPlayer::~GPMFSonarPlayer() { ; }
+GPMFSonarPlayer::GPMFSonarPlayer( GPMF_stream *stream )
+    : SonarPlayerBase(), _stream(stream), _valid(true), _buffer()
+{;}
+
+
+GPMFSonarPlayer::~GPMFSonarPlayer() {
+  if( _input ) {
+    _input.close();
+  }
+}
 
 bool GPMFSonarPlayer::open(const std::string &filename) {
   {
@@ -106,10 +109,10 @@ bool GPMFSonarPlayer::open(const std::string &filename) {
 
   LOG(DEBUG) << "Loading " << _buffer.size() << " bytes";
 
-  GPMF_Init(&_stream, (unsigned int *)_buffer.c_str(), (_buffer.size()));
+  GPMF_Init(_stream, (unsigned int *)_buffer.c_str(), (_buffer.size()));
 
   // {
-  //   auto retval = GPMF_Validate(&_stream, GPMF_RECURSE_LEVELS);
+  //   auto retval = GPMF_Validate(_stream, GPMF_RECURSE_LEVELS);
   //   if( retval != GPMF_OK ) {
   //     LOG(WARNING) << "GPMF structure is not valid; err = " << retval;
   //     return false;
@@ -118,7 +121,7 @@ bool GPMFSonarPlayer::open(const std::string &filename) {
 
   {
     auto retval =
-        GPMF_FindNext(&_stream, STR2FOURCC("OCUS"), GPMF_RECURSE_LEVELS);
+        GPMF_FindNext(_stream, STR2FOURCC("OCUS"), GPMF_RECURSE_LEVELS);
 
     if (retval != GPMF_OK) {
       LOG(INFO) << "Unable to find Oculus sonar data in GPMF file (err "
@@ -130,67 +133,50 @@ bool GPMFSonarPlayer::open(const std::string &filename) {
   return true;
 }
 
-bool GPMFSonarPlayer::setStream(GPMF_stream *stream) {
-  _stream = *stream;
-  // GPMF_Init(&_stream, (unsigned int *)_buffer.c_str(), (_buffer.size()));
-  //
-  // {
-  //   auto retval =
-  //       GPMF_FindNext(&_stream, STR2FOURCC("OCUS"), GPMF_RECURSE_LEVELS);
-  //
-  //   if (retval != GPMF_OK) {
-  //     LOG(INFO) << "Unable to find Oculus sonar data in GPMF file (err "
-  //               << retval << ")";
-  //     return false;
-  //   }
-  // }
-  return true;
-}
-
 bool GPMFSonarPlayer::eof() {
   // How to handle this?
-  auto retval = GPMF_Validate(&_stream, GPMF_RECURSE_LEVELS);
+  auto retval = GPMF_Validate(_stream, GPMF_RECURSE_LEVELS);
   return retval == GPMF_ERROR_BUFFER_END;
 }
 
 void GPMFSonarPlayer::rewind() {
   if (_valid) {
-    GPMF_ResetState(&_stream);
+    GPMF_ResetState(_stream);
   }
 }
 
 void GPMFSonarPlayer::close() { _valid = false; }
 
 void GPMFSonarPlayer::dumpGPMF() {
-  auto key = GPMF_Key(&_stream);
+  auto key = GPMF_Key(_stream);
   LOG(INFO) << "Current key \"" << char((key >> 0) & 0xFF)
             << char((key >> 8) & 0xFF) << char((key >> 16) & 0xFF)
             << char((key >> 24) & 0xFF) << "\" (" << std::hex << key << ")";
-  LOG(INFO) << "Current type " << GPMF_Type(&_stream);
-  LOG(INFO) << "Current device ID " << std::hex << GPMF_DeviceID(&_stream);
+  LOG(INFO) << "Current type " << GPMF_Type(_stream);
+  LOG(INFO) << "Current device ID " << std::hex << GPMF_DeviceID(_stream);
 
   char deviceName[80];
-  GPMF_DeviceName(&_stream, deviceName, 79);
+  GPMF_DeviceName(_stream, deviceName, 79);
   LOG(INFO) << "Current device name " << deviceName;
 
-  LOG(INFO) << "Current struct size " << GPMF_StructSize(&_stream);
-  LOG(INFO) << "Current repeat size " << GPMF_Repeat(&_stream);
+  LOG(INFO) << "Current struct size " << GPMF_StructSize(_stream);
+  LOG(INFO) << "Current repeat size " << GPMF_Repeat(_stream);
   LOG(INFO) << "Current payload sample count "
-            << GPMF_PayloadSampleCount(&_stream);
-  LOG(INFO) << "Current elements in struct " << GPMF_ElementsInStruct(&_stream);
-  LOG(INFO) << "Current raw data size " << GPMF_RawDataSize(&_stream);
+            << GPMF_PayloadSampleCount(_stream);
+  LOG(INFO) << "Current elements in struct " << GPMF_ElementsInStruct(_stream);
+  LOG(INFO) << "Current raw data size " << GPMF_RawDataSize(_stream);
 }
 
 bool GPMFSonarPlayer::nextPing( SimplePingResult &ping ) {
   //
   // Ended up not needing to implement.  Oculus client records
   // messagePingResult, which we don't have the format for ...
-  auto key = GPMF_Key(&_stream);
+  auto key = GPMF_Key(_stream);
   if (key != STR2FOURCC("OCUS"))
     return false;
 
-  MessageHeader header( (char *)GPMF_RawData(&_stream), GPMF_RawDataSize(&_stream) );
-  // char *data = (char *)GPMF_RawData(&_stream);
+  MessageHeader header( (char *)GPMF_RawData(_stream), GPMF_RawDataSize(_stream) );
+  // char *data = (char *)GPMF_RawData(_stream);
   // CHECK(data != nullptr);
 
   if (!header.valid()) {
@@ -198,7 +184,7 @@ bool GPMFSonarPlayer::nextPing( SimplePingResult &ping ) {
     return false;
   }
 
-  auto retval = GPMF_FindNext(&_stream, STR2FOURCC("OCUS"), GPMF_RECURSE_LEVELS);
+  auto retval = GPMF_FindNext(_stream, STR2FOURCC("OCUS"), GPMF_RECURSE_LEVELS);
   if (retval != GPMF_OK) {
     _valid = false;
   }

@@ -45,10 +45,12 @@ std::shared_ptr<liboculus::SonarPlayerBase> OpenFile(const std::string &filename
 class GPMFSonarPlayer : public liboculus::SonarPlayerBase {
 public:
   GPMFSonarPlayer();
+  GPMFSonarPlayer( GPMF_stream *stream );
   virtual ~GPMFSonarPlayer();
 
   virtual bool open(const std::string &filename);
-  virtual bool setStream(GPMF_stream *stream);
+  //bool setStream(GPMF_stream *stream);
+
   virtual bool isOpen() const { return _valid; }
 
   void close();
@@ -62,7 +64,7 @@ public:
   void dumpGPMF(void);
 
 private:
-  GPMF_stream _stream;
+  GPMF_stream *_stream;
   bool _valid;
   std::string _buffer;
 };
