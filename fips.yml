@@ -1,11 +1,13 @@
 imports:
-    serdp_common:
-        git: https://github.com/apl-ocean-engineering/serdp_common.git
+    liboculus:
+        git: https://github.com/apl-ocean-engineering/liboculus.git
         branch: master
+    libgpmf:
+        git: https://github.com/apl-ocean-engineering/libgpmf.git
 
 exports:
     modules:
-      serdp_player: .
+      serdp_gpmf: .
     header_dirs:
       - include
 

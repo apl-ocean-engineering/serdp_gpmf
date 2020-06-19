@@ -1,93 +1,47 @@
 #
-# project: serdp_player
+# project: serdp_gpmf
 #
 cmake_minimum_required(VERSION 3.5)
-project(serdp_player)
-
+project(serdp_gpmf)
 
 if( FIPS_CONFIG AND NOT FIPS_IMPORT )
-  cmake_minimum_required(VERSION 3.5)
-
   get_filename_component(FIPS_ROOT_DIR "../fips" ABSOLUTE)
   include("${FIPS_ROOT_DIR}/cmake/fips.cmake")
 
   fips_setup()
-
 else()
   find_package(catkin QUIET)
 endif()
-
-list(APPEND OPENCV_COMPONENTS core highgui imgproc videoio)
-find_package(OpenCV COMPONENTS ${OPENCV_COMPONENTS} REQUIRED)
-
-find_path( AVCODEC_INCLUDE_DIR libavcodec/avcodec.h )
-find_library( AVCODEC_LIBRARY avcodec )
-
-find_path( AVFORMAT_INCLUDE_DIR libavformat/avformat.h )
-find_library( AVFORMAT_LIBRARY avformat )
-
-find_path(AVDEVICE_INCLUDE_DIR libavdevice/avdevice.h)
-find_library(AVDEVICE_LIBRARY avdevice)
-
-
-find_path(MEM_INCLUDE_DIR libavutil/mem.h)
-find_library(MEM_LIBRARIES mem)
-
-
-find_path(SWSCALE_INCLUDE_DIR libswscale/swscale.h)
-find_library(SWSCALE_LIBRARIES swscale)
-
-find_path(AVUTIL_INCLUDE_DIR libavutil/avutil.h)
-find_library(AVUTIL_LIBRARIES avutil)
-#find_package(FFmpeg REQUIRED)
-
-
-
 
 ## C++ flags applied to all builds
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 if (FIPS_CONFIG)
-  add_definitions( -DWITH_GPMF )
 
-  fips_begin_module( libserdp_player )
+  fips_begin_module( libserdp_gpmf )
 
     fips_src( lib/ )
 
-    fips_deps( gpmf g3log g3logger oculus serdp_common activeobject)
+    fips_deps( gpmf g3logger)
 
     fips_include_directories(
       ${CMAKE_SOURCE_DIR}/include
-      ${OpenCV_INCLUDE_DIRS}
-      #${FFMPEG_INCLUDE_DIR}
-      ${AVCODEC_INCLUDE_DIR}
-      ${SWSCALE_INCLUDE_DIR}
-      ${AVFORMAT_INCLUDE_DIR}
-      #${AVUTIL_INCLUDE_DIR}
      )
-    fips_libs(
-       ${OpenCV_LIBS}
-       #${FFMPEG_LIBRARIES}
-       ${AVCODEC_LIBRARY}
-       ${SWSCALE_LIBRARIES}
-       ${AVFORMAT_LIBRARY}
-       ${AVUTIL_LIBRARIES}
-    )
 
   fips_end_module()
-
 
   fips_add_subdirectory( tools/ )
   if( NOT FIPS_IMPORT )
 
-    if( FIPS_UNITTESTS )
-      gtest_begin( serdp_common )
-      fips_src( test/unit/ )
-      fips_deps( serdp_common )
-      gtest_end()
-    endif()
+    # if( FIPS_UNITTESTS )
+    #   gtest_begin( serdp_gpmf )
+    #   fips_src( test/unit/ )
+    #   fips_deps(  )
+    #   gtest_end()
+    # endif()
 
   endif()
+
   fips_finish()
 
 else()
@@ -97,24 +51,12 @@ else()
       gpmf
       g3log_catkin
       liboculus REQUIRED
-      serdp_common
-      active_object
-      cv_bridge
-      sensor_msgs
-      image_transport
-      imaging_sonar_msgs
-      rosbag
     )
 
     catkin_package(
-    	CATKIN_DEPENDS
-        liboculus
-        gpmf
-        sensor_msgs
-        imaging_sonar_msgs
-        rosbag
+    	CATKIN_DEPENDS liboculus gpmf
       INCLUDE_DIRS include
-      LIBRARIES serdp_player_LIB
+      LIBRARIES serdp_gpmf_LIB
     )
 
     include_directories(
@@ -124,20 +66,14 @@ else()
       )
 
 
-    file(GLOB serdp_player_SRCS
-        ros/lib/*cpp
-        lib/serdp_player/*cpp
+    file(GLOB serdp_gpmf_SRCS
+        lib/*.cpp
       )
 
+    add_library(serdp_gpmf ${serdp_gpmf_SRCS})
+    target_link_libraries(serdp_gpmf ${catkin_LIBRARIES})
 
-    add_library(serdp_player ${serdp_player_SRCS})
-    target_link_libraries(serdp_player ${catkin_LIBRARIES} ${AVCODEC_LIBRARY} ${AVFORMAT_LIBRARY} ${AVDEVICE_LIBRARY} ${SWSCALE_LIBRARIES} ${AVUTIL_LIBRARIES} ${OpenCV_LIBS} ${serdp_common_LIBRARIES})
-
-    add_executable(serdp_player_ros ros/tools/serdp_player_ros.cpp)
-    target_link_libraries(serdp_player_ros serdp_player_LIB )
-
-
-    install(TARGETS serdp_player
+    install(TARGETS serdp_gpmf
           ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
           LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
           RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})

@@ -1,5 +1,5 @@
-# serdp_player
-
+# serdp_gpmf
+<!--
 Serdp_player .mov decoder to read .movs/.mp4s and decode them into GPMF and image formats display, publish as ROS messages, and encode as ROS bags.   
 
 Code consists of both [ROS](https://www.ros.org/) and (limited-functionality) [fips](https://github.com/floooh/fips) compatabile tools.
@@ -38,7 +38,7 @@ $./fips build
 ### Running
 $./fips run serdp_player -- <path_to_mov>  
 
-The mov should now be displayed 
+The mov should now be displayed -->
 
 # License
 

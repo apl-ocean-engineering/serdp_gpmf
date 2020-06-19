@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>serdp_player</name>
+  <name>serdp_gpmf</name>
   <version>0.0.1</version>
-  <description>Catkin serdp_player </description>
+  <description>Tools to encode/decode sonar to GPMF</description>
 
-  <maintainer email="mitchell.scott@uw.edu">igor</maintainer>
+  <maintainer email="amarburg@uw.edu">Aaron Marburg</maintainer>
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
   <license>BSD</license>
-
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
@@ -20,20 +19,6 @@
   <depend>g3log_catkin</depend>
   <depend>active_object</depend>
   <depend>liboculus</depend>
-  <depend>serdp_common</depend>
   <depend>gpmf</depend>
-  <depend>sensor_msgs</depend>
-  <depend>cv_bridge</depend>
-  <depend>image_transport</depend>
-  <depend>imaging_sonar_msgs</depend>
-  <depend>rosbag</depend>
 
-
-  <export>
-    <!-- You can specify that this package is a metapackage here: -->
-    <!-- <metapackage/> -->
-
-    <!-- Other tools can request additional information be placed here -->
-
-  </export>
 </package>

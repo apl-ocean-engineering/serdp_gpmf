@@ -27,18 +27,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
- #include "ros/ros.h"
+#pragma once
 
-#include "sensor_msgs/Image.h"
-#include <cv_bridge/cv_bridge.h>
-#include <image_transport/image_transport.h>
+#include <memory>
+#include <string>
 
-#include "imaging_sonar_msgs/ImagingSonarMsg.h"
+#include "gpmf-parser/GPMF_parser.h"
+#include "liboculus/SonarPlayer.h"
 
-#include "serdp_player/MovDecoder.h"
+namespace serdp_gpmf {
 
-namespace ROSEncode {
-sensor_msgs::ImagePtr img2ROS(cv::Mat img);
-imaging_sonar_msgs::ImagingSonarMsg
-GPMF2ROS(std::shared_ptr<serdp_common::SonarData> sonarData);
-} // namespace ROSEncode
+std::shared_ptr<liboculus::SonarPlayerBase> OpenFile(const std::string &filename);
+
+///
+///
+///
+class GPMFSonarPlayer : public liboculus::SonarPlayerBase {
+public:
+  GPMFSonarPlayer();
+  virtual ~GPMFSonarPlayer();
+
+  virtual bool open(const std::string &filename);
+  virtual bool setStream(GPMF_stream *stream);
+  virtual bool isOpen() const { return _valid; }
+
+  void close();
+
+  virtual bool eof();
+  virtual void rewind();
+
+  // char *nextPacket();
+  virtual bool nextPing( liboculus::SimplePingResult &ping );
+
+  void dumpGPMF(void);
+
+private:
+  GPMF_stream _stream;
+  bool _valid;
+  std::string _buffer;
+};
+
+
+} // namespace liboculus
