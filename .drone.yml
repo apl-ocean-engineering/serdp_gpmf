@@ -22,6 +22,17 @@ steps:
     ROS_PACKAGES_TO_INSTALL: cv-bridge image-transport opencv-apps
     WSTOOL_RECURSIVE: true
 
+- name: trigger-github-downstream
+  image: plugins/downstream
+  settings:
+    server: https://github.drone.camhd.science
+    fork: true
+    token:
+      from_secret: github_drone_token
+    repositories:
+      - apl-ocean-engineering/serdp_recorder
+      - apl-ocean-engineering/serdp_player
+
 - name: slack
   image: plugins/slack
   settings:
