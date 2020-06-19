@@ -8,8 +8,8 @@ imports:
 exports:
     modules:
       serdp_gpmf: .
-    header_dirs:
-      - include
+    header-dirs:
+      - include/
 
 defines:
   FIPS_EXCEPTIONS: ON
