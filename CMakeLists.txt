@@ -22,7 +22,7 @@ if (FIPS_CONFIG)
 
     fips_src( lib/ )
 
-    fips_deps( gpmf g3logger)
+    fips_deps( gpmf g3logger oculus )
 
     fips_include_directories(
       ${CMAKE_SOURCE_DIR}/include
