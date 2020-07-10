@@ -46,7 +46,7 @@ class GPMFSonarPlayer : public liboculus::SonarPlayerBase {
 public:
   GPMFSonarPlayer();
 
-  GPMFSonarPlayer( GPMF_stream *stream );
+  GPMFSonarPlayer( const std::shared_ptr<GPMF_stream> &stream );
 
   virtual ~GPMFSonarPlayer();
 
