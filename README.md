@@ -1,4 +1,10 @@
 # serdp_gpmf
+
+Contains libraries and sample binaries for encoding and decoding SERDP sensor (e.g., [liboculus]()) data 
+in GPMF streams.
+
+
+
 <!--
 Serdp_player .mov decoder to read .movs/.mp4s and decode them into GPMF and image formats display, publish as ROS messages, and encode as ROS bags.   
 
