@@ -43,6 +43,8 @@ using std::string;
 #include "liboculus/SonarClient.h"
 #include "liboculus/SonarPlayer.h"
 
+#include "serdp_gpmf/GpmfSonarPlayer.h"
+
 
 using namespace liboculus;
 
@@ -165,7 +167,7 @@ int main( int argc, char **argv ) {
 
 
 int playbackSonarFile( const std::string &filename, ofstream &output, int stopAfter ) {
-  std::shared_ptr<SonarPlayerBase> player( SonarPlayerBase::OpenFile(filename) );
+  std::shared_ptr<SonarPlayerBase> player( serdp_gpmf::OpenFile(filename) );
 
   if( !player ) {
     LOG(WARNING) << "Unable to open sonar file";
