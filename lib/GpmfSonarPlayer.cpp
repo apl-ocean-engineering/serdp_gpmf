@@ -77,9 +77,9 @@ GPMFSonarPlayer::GPMFSonarPlayer()
     : SonarPlayerBase(), _stream( new GPMF_stream ), _valid(false), _buffer()
 {;}
 
-// GPMFSonarPlayer::GPMFSonarPlayer( GPMF_stream *stream )
-//     : SonarPlayerBase(), _stream(stream), _valid(true), _buffer()
-// {;}
+GPMFSonarPlayer::GPMFSonarPlayer( GPMF_stream *stream )
+    : SonarPlayerBase(), _stream( stream ), _valid(true), _buffer()
+{;}
 
 
 GPMFSonarPlayer::~GPMFSonarPlayer() {
