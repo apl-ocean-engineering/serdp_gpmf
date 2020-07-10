@@ -30,8 +30,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "Oculus/Oculus.h"
-
 #include "g3log/g3log.hpp"
 
 #include "liboculus/DataTypes.h"
